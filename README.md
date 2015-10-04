@@ -9,10 +9,12 @@ From the Julia command prompt:
 Pkg.clone("git://github.com/ehkropf/ComplexPhasePortrait.jl.git")
 ```
 
-## Example
+## Examples
 
 There is so far one exported function, `portrait`, and here we will try to detail its use. First we need function data over a grid.
 ```julia
+using ComplexPhasePortrait
+
 nx = 1000
 x = linspace(-1, 1, nx)
 Z = x' .+ flipdim(x, 1)*im
