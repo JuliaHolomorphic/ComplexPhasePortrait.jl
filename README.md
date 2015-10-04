@@ -37,11 +37,13 @@ Lines of constant phase are given by
 ```julia
 img = portrait(fz, PTstepphase)
 ```
+![constant phase](doc/figures/stepphase.png)
 
 Lines of constant modulus are given by
 ```julia
 img = portrait(fz, PTstepmod)
 ```
+![constant modulus](doc/figures/stepmod.png)
 
 Finally, a conformal grid is given by
 ```julia
