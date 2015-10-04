@@ -25,4 +25,26 @@ First is a basic phase plot.
 ```julia
 img = portrait(fz)
 ```
-(Image goes here.)
+![proper phase plot](doc/figures/proper.png)
+
+Basic plot using [NIST coloring](http://dlmf.nist.gov/help/vrml/aboutcolor).
+```julia
+img = portrait(fz, ctype="nist")
+```
+![nist coloring](doc/figures/nist.png)
+
+Lines of constant phase are given by
+```julia
+img = portrait(fz, PTstepphase)
+```
+
+Lines of constant modulus are given by
+```julia
+img = portrait(fz, PTstepmod)
+```
+
+Finally, a conformal grid is given by
+```julia
+img = portrait(fz, PTcgrid)
+```
+![conformal grid](doc/figures/cgrid.png)
