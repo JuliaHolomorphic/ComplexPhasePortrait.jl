@@ -9,20 +9,20 @@ export portrait, PortraitType, PTproper, PTcgrid, PTstepphase, PTstepmod
 const brighten = 0.1
 
 """
-    portrait builds a phase portrait over a give complex grid.
+portrait builds a phase portrait over a give complex grid.
 
-    The PortraitType determines what type of portrait is generated:
-      PTproper - a proper phase portrait
-      PTcgrid - a conformal grid
-      PTstepphase - a stepped phase plot
-      PTstepmod - a stepped modulus plot
+The PortraitType determines what type of portrait is generated:
+  PTproper - a proper phase portrait
+  PTcgrid - a conformal grid
+  PTstepphase - a stepped phase plot
+  PTstepmod - a stepped modulus plot
 
-    Named arguments:
-      ctype - is the colormap type. The default "standard" is a basic HSL
-        map with H∈[0,360], S = 1.0, and L = 0.5. Setting `ctype="nist"`
-        gives the NIST color scheme [insert href here].
-      pres - is the phase step resolution (number of phase jumps),
-        default `pres=20`.
+Named arguments:
+  ctype - is the colormap type. The default "standard" is a basic HSL
+    map with H∈[0,360], S = 1.0, and L = 0.5. Setting `ctype="nist"`
+    gives the NIST color scheme [insert href here].
+  pres - is the phase step resolution (number of phase jumps),
+    default `pres=20`.
 """
 function portrait(fval::Array{Complex{Float64},2}, mtype::PortraitType=PTproper;
                   ctype="standard", pres=20)
