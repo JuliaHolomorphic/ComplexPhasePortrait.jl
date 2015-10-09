@@ -35,16 +35,16 @@ function portrait(fval::Array{Complex{Float64},2}, mtype::PortraitType=PTproper;
                 colorspace="RGB", colordim=0)
 
     if mtype == PTproper
-      phaseToImage!(img, nphase, cm)
+        phaseToImage!(img, nphase, cm)
     elseif mtype == PTcgrid
-      lowb = sqrt(0.75^2*(1.0 - brighten) + brighten)
-      black = (sawfun(farg, 1/pres, lowb, 1.0)
-               .*sawfun(log(abs(fval)), 2pi/pres, lowb, 1.0))
-      phaseToImage!(img, nphase, black, cm)
+        lowb = sqrt(0.75^2*(1.0 - brighten) + brighten)
+        black = (sawfun(farg, 1/pres, lowb, 1.0)
+                 .*sawfun(log(abs(fval)), 2pi/pres, lowb, 1.0))
+        phaseToImage!(img, nphase, black, cm)
     elseif mtype == PTstepphase
-      phaseToImage!(img, nphase, sawfun(farg, 1/pres, 0.75, 1.0), cm)
+        phaseToImage!(img, nphase, sawfun(farg, 1/pres, 0.75, 1.0), cm)
     elseif mtype == PTstepmod
-      phaseToImage!(img, nphase, sawfun(log(abs(fval)), 2pi/pres, 0.75, 1.0), cm)
+        phaseToImage!(img, nphase, sawfun(log(abs(fval)), 2pi/pres, 0.75, 1.0), cm)
     else
     end
 
@@ -62,7 +62,7 @@ end
 
 "Color map for complex phase portrait with 600 elements."
 function baseColorMap(ctype="standard")
-  if ctype == "nist"
+    if ctype == "nist"
         const nc = 900
         cm = linspace(HSL(0.0, 1.0, 0.5), HSL(360.0, 1.0, 0.5), nc)
         idx = [1:Int(nc/6); Int(nc/6)+1:2:Int(nc/2); Int(nc/2)+1:2*Int(nc/3);
