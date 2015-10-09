@@ -1,6 +1,6 @@
 # ComplexPhasePortrait
 
-This package is an implementation of the phase portrait plotting portion of Elias Wegert's [complex function explorer](http://www.mathworks.com/matlabcentral/fileexchange/45464-complex-function-explorer).
+This package is a [Julia](http://julialang.org) implementation of the phase portrait ideas presented in Elias Wegert's book "[Visual Complex Functions](http://www.visual.wegert.com)".
 
 ## Installation
 
@@ -11,7 +11,7 @@ Pkg.clone("git://github.com/ehkropf/ComplexPhasePortrait.jl.git")
 
 ## Examples
 
-There is so far one exported function, `portrait`, and here we will try to detail its use. First we need function data over a grid.
+There is so far one exported function, `portrait`, and here I will try to detail its use. First we need function data over a grid.
 ```julia
 using ComplexPhasePortrait
 
@@ -23,7 +23,7 @@ f(z) = (z - 0.5im).^2.*(z + 0.5+0.5im)./z
 fz = f(Z)
 ```
 
-First is a basic phase plot.
+Now a basic phase plot.
 ```julia
 img = portrait(fz)
 ```
