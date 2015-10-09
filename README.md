@@ -29,7 +29,20 @@ img = portrait(fz)
 ```
 ![proper phase plot](doc/figures/proper.png)
 
-Basic plot using [NIST coloring](http://dlmf.nist.gov/help/vrml/aboutcolor).
+Note that the output of `portrait` is an `Image` type from the [Images.jl](https://github.com/timholy/Images.jl) package.
+```julia
+show(img)
+```
+```
+RGB Images.Image with:
+  data: 1000x1000 Array{ColorTypes.RGB{Float64},2}
+  properties:
+    colorspace: RGB
+    colordim: 0
+    spatialorder:  y x
+```
+
+Nor for a basic plot using [NIST coloring](http://dlmf.nist.gov/help/vrml/aboutcolor).
 ```julia
 img = portrait(fz, ctype="nist")
 ```
