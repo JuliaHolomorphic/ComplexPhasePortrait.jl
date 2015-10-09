@@ -46,6 +46,7 @@ function portrait(fval::Array{Complex{Float64},2}, mtype::PortraitType=PTproper;
     elseif mtype == PTstepmod
         phaseToImage!(img, nphase, sawfun(log(abs(fval)), 2pi/pres, 0.75, 1.0), cm)
     else
+        error("Portrait type not recognised.")
     end
 
     return img
