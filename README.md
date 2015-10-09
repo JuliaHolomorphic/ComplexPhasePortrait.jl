@@ -42,7 +42,7 @@ RGB Images.Image with:
     spatialorder:  y x
 ```
 
-Nor for a basic plot using [NIST coloring](http://dlmf.nist.gov/help/vrml/aboutcolor).
+Now for a basic plot using [NIST coloring](http://dlmf.nist.gov/help/vrml/aboutcolor).
 ```julia
 img = portrait(fz, ctype="nist")
 ```
