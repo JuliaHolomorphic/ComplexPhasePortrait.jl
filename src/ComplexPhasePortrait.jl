@@ -4,9 +4,13 @@ import Images.Image
 import Colors: RGB, HSL
 
 export portrait,
-       PortraitType, PTproper, PTcgrid, PTstepphase, PTstepmod
+       PTproper, PTcgrid, PTstepphase, PTstepmod
 
-@enum PortraitType PTproper PTcgrid PTstepphase PTstepmod
+abstract PortraitType <: Any
+type PTproper <: PortraitType end
+type PTcgrid <: PortraitType end
+type PTstepmod <: PortraitType end
+type PTstepphase <: PortraitType end
 
 const brighten = 0.1
 
@@ -28,33 +32,52 @@ Named arguments:
 * pres - is the phase step resolution (number of phase jumps), default
   `pres=20`.
 """
-function portrait(fval::Array{Complex{Float64},2}, mtype::PortraitType=PTproper;
-                  ctype="standard", pres=20)
-    (farg, nphase, cm) = setupPhase(fval, ctype)
-    (n, m) = size(nphase)
-    img = Image(Array(RGB{Float64}, n, m), spatialorder=["y", "x"],
-                colorspace="RGB", colordim=0)
 
-    if mtype == PTproper
-        phaseToImage!(img, nphase, cm)
-    elseif mtype == PTcgrid
-        lowb = sqrt(0.75^2*(1.0 - brighten) + brighten)
-        black = (sawfun(farg, 1/pres, lowb, 1.0)
-                 .*sawfun(log(abs(fval)), 2pi/pres, lowb, 1.0))
-        phaseToImage!(img, nphase, black, cm)
-    elseif mtype == PTstepphase
-        phaseToImage!(img, nphase, sawfun(farg, 1/pres, 0.75, 1.0), cm)
-    elseif mtype == PTstepmod
-        phaseToImage!(img, nphase, sawfun(log(abs(fval)), 2pi/pres, 0.75, 1.0), cm)
-    else
-        error("Portrait type not recognised.")
-    end
+function portrait(fval::Array{Complex{Float64},2}; kwargs...)
+    portrait(fval, PTproper; kwargs...)
+end
 
+function portrait(fval::Array{Complex{Float64},2}, ::Type{PTproper};
+                  kwargs...)
+    args = baseArgs(fval; kwargs...)
+    phaseToImage!(args[1:3]...)
+    return args[1]
+end
+
+function portrait(fval::Array{Complex{Float64},2}, ::Type{PTcgrid};
+                  pres=20, kwargs...)
+    (img, nphase, cm, farg) = baseArgs(fval; kwargs...)
+    lowb = sqrt(0.75^2*(1.0 - brighten) + brighten)
+    black = (sawfun(farg, 1/pres, lowb, 1.0)
+             .*sawfun(log(abs(fval)), 2pi/pres, lowb, 1.0))
+    phaseToImage!(img, nphase, black, cm)
     return img
 end
 
-function setupPhase(fval, ctype)
-    cm = baseColorMap(ctype)
+function portrait(fval::Array{Complex{Float64},2}, ::Type{PTstepmod};
+                  pres=20, kwargs...)
+    (img, nphase, cm) = baseArgs(fval; kwargs...)
+    phaseToImage!(img, nphase, sawfun(log(abs(fval)), 2pi/pres, 0.75, 1.0), cm)
+    return img
+end
+
+function portrait(fval::Array{Complex{Float64},2}, ::Type{PTstepphase};
+                  pres=20, kwargs...)
+    (img, nphase, cm, farg) = baseArgs(fval; kwargs...)
+    phaseToImage!(img, nphase, sawfun(farg, 1/pres, 0.75, 1.0), cm)
+    return img
+end
+
+function baseArgs(fval::Array{Complex{Float64},2}; kwargs...)
+    (farg, nphase, cm) = setupPhase(fval; kwargs...)
+    (n, m) = size(nphase)
+    img = Image(Array(RGB{Float64}, n, m), spatialorder=["y", "x"],
+                colorspace="RGB", colordim=0)
+    return img, nphase, cm, farg
+end
+
+function setupPhase(fval; kwargs...)
+    cm = baseColorMap(;kwargs...)
     nc = length(cm)
     farg = (angle(-fval) + pi)/2pi
     nphase = stepfun(farg, nc)
@@ -63,7 +86,7 @@ function setupPhase(fval, ctype)
 end
 
 "Color map for complex phase portrait with 600 elements."
-function baseColorMap(ctype="standard")
+function baseColorMap(;ctype="standard")
     if ctype == "nist"
         const nc = 900
         cm = linspace(HSL(0.0, 1.0, 0.5), HSL(360.0, 1.0, 0.5), nc)
