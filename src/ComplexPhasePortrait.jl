@@ -1,6 +1,7 @@
 module ComplexPhasePortrait
 
-using Images, Colors
+import Images.Image
+import Colors: RGB, HSL
 
 export portrait,
        PortraitType, PTproper, PTcgrid, PTstepphase, PTstepmod
