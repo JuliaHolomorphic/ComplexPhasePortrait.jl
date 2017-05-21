@@ -113,14 +113,14 @@ end
 
 function phaseToImage!(img, pidx, cm)
     for j in 1:size(pidx, 2), i in 1:size(pidx, 1)
-        img[j,i] = cm[pidx[i,j]]
+        img[i,j] = cm[pidx[i,j]]
     end
     nothing
 end
 
 function phaseToImage!(img, pidx, black, cm)
     for j in 1:size(pidx, 2), i in 1:size(pidx, 1)
-        img[j,i] = cm[pidx[i,j]]*black[i,j]
+        img[i,j] = cm[pidx[i,j]]*black[i,j]
     end
     nothing
 end
