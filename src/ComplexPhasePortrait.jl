@@ -71,8 +71,7 @@ end
 function baseArgs(fval::Array{Complex{Float64},2}; kwargs...)
     (farg, nphase, cm) = setupPhase(fval; kwargs...)
     (n, m) = size(nphase)
-    img = Image(Array(RGB{Float64}, n, m), spatialorder=["y", "x"],
-                colorspace="RGB", colordim=0)
+    img = Array(RGB{Float64}, m, n)
     return img, nphase, cm, farg
 end
 
