@@ -1,4 +1,5 @@
 module ComplexPhasePortrait
+using PlotsBase
 import Images
 import Colors: RGB, HSL
 
@@ -124,6 +125,24 @@ function phaseToImage!(img, pidx, black, cm)
         img[n-i+1,j] = cm[pidx[i,j]]*black[i,j]
     end
     nothing
+end
+
+## Recipe for Plots
+
+@userplot ComplexPlot
+
+@recipe function f(c::ComplexPlot)
+    if length(c.args) < 3 || !(c.args[1] isa Function) || !(c.args[2] isa AbstractVector) || !(c.args[3] isa AbstractVector)
+        error("Complex Plot requires a complex function")
+    end
+    
+    ff,xx,yy = c.args[1],c.args[2],c.args[3]
+    zz = xx' .+ im.*yy
+    
+    xlims := (first(xx),last(xx))
+    ylims := (first(yy),last(yy))
+    
+    @series portrait(ff.(zz))
 end
 
 end # module
