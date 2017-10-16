@@ -1,10 +1,10 @@
 module ComplexPhasePortrait
-using PlotsBase
+using RecipesBase
 import Images
 import Colors: RGB, HSL
 
 export portrait,
-       PTproper, PTcgrid, PTstepphase, PTstepmod
+       PTproper, PTcgrid, PTstepphase, PTstepmod, phaseplot
 
 abstract type PortraitType <: Any end
 struct PTproper <: PortraitType end
@@ -70,7 +70,7 @@ end
 
 function baseArgs(fval::Array{Complex{Float64},2}; kwargs...)
     (farg, nphase, cm) = setupPhase(fval; kwargs...)
-    (n, m) = size(nphase)
+    (m, n) = size(nphase)
     img = Array{RGB{Float64}}(m, n)
     return img, nphase, cm, farg
 end
@@ -129,20 +129,38 @@ end
 
 ## Recipe for Plots
 
-@userplot ComplexPlot
+@userplot PhasePlot
 
-@recipe function f(c::ComplexPlot)
-    if length(c.args) < 3 || !(c.args[1] isa Function) || !(c.args[2] isa AbstractVector) || !(c.args[3] isa AbstractVector)
+@recipe function f(c::PhasePlot)
+    if length(c.args) < 3 || !(c.args[1] isa Function) 
         error("Complex Plot requires a complex function")
     end
     
-    ff,xx,yy = c.args[1],c.args[2],c.args[3]
+    ff = c.args[1]
+    
+    xx = if c.args[2] isa AbstractVector
+	    	c.args[2]
+    	elseif c.args[2] isa NTuple{2,Int}
+    		linspace(c.args[2]..., 500)
+    	else
+    		error("Complex plot second argument must give the x limits")
+		end
+    yy = if c.args[3] isa AbstractVector
+	    	c.args[3]
+    	elseif c.args[3] isa NTuple{2,Int}
+    		linspace(c.args[3]..., 500)
+    	else
+    		error("Complex plot tihrtd argument must give the y limits")
+		end		
+  
+    
+
     zz = xx' .+ im.*yy
     
     xlims := (first(xx),last(xx))
     ylims := (first(yy),last(yy))
     
-    @series portrait(ff.(zz))
+    @series portrait(Matrix{Complex128}(ff.(zz)))
 end
 
 end # module
