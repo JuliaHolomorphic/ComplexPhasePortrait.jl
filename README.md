@@ -6,7 +6,7 @@ This package is a [Julia](http://julialang.org) implementation of the phase port
 
 From the Julia command prompt:
 ```julia
-Pkg.clone("git://github.com/ehkropf/ComplexPhasePortrait.jl.git")
+Pkg.clone("git://github.com/JuliaHolomorphic/ComplexPhasePortrait.jl.git")
 ```
 
 ## Examples
