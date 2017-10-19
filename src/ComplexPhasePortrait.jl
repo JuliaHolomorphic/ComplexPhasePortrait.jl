@@ -1,16 +1,16 @@
 module ComplexPhasePortrait
-
-import Images.Image
+using RecipesBase
+import Images
 import Colors: RGB, HSL
 
 export portrait,
-       PTproper, PTcgrid, PTstepphase, PTstepmod
+       PTproper, PTcgrid, PTstepphase, PTstepmod, phaseplot
 
-abstract PortraitType <: Any
-type PTproper <: PortraitType end
-type PTcgrid <: PortraitType end
-type PTstepmod <: PortraitType end
-type PTstepphase <: PortraitType end
+abstract type PortraitType <: Any end
+struct PTproper <: PortraitType end
+struct PTcgrid <: PortraitType end
+struct PTstepmod <: PortraitType end
+struct PTstepphase <: PortraitType end
 
 const brighten = 0.1
 
@@ -57,7 +57,7 @@ end
 function portrait(fval::Array{Complex{Float64},2}, ::Type{PTstepmod};
                   pres=20, kwargs...)
     (img, nphase, cm) = baseArgs(fval; kwargs...)
-    phaseToImage!(img, nphase, sawfun(log(abs(fval)), 2pi/pres, 0.75, 1.0), cm)
+    phaseToImage!(img, nphase, sawfun(log.(abs.(fval)), 2pi/pres, 0.75, 1.0), cm)
     return img
 end
 
@@ -70,15 +70,15 @@ end
 
 function baseArgs(fval::Array{Complex{Float64},2}; kwargs...)
     (farg, nphase, cm) = setupPhase(fval; kwargs...)
-    (n, m) = size(nphase)
-    img = Array(RGB{Float64}, m, n)
+    (m, n) = size(nphase)
+    img = Array{RGB{Float64}}(m, n)
     return img, nphase, cm, farg
 end
 
 function setupPhase(fval; kwargs...)
     cm = baseColorMap(;kwargs...)
     nc = length(cm)
-    farg = (angle(-fval) + pi)/2pi
+    farg = (angle.(-fval) .+ pi)./2pi
     nphase = stepfun(farg, nc)
 
     return (farg, nphase, cm)
@@ -100,29 +100,67 @@ end
 
 "Integer step function with period 1 such that [0,1]⟶[1,nmax]."
 function stepfun(x, nmax)
-    y = x - floor(x)
-    y = convert(Array{UInt16}, floor(nmax*y) + 1)
+    y = x .- floor.(x)
+    y = convert(Array{UInt16}, floor.(nmax*y) .+ 1)
 end
 
 "Sawtooth function over reals with period dx onto [a,b]."
 function sawfun(x, dx, a, b)
     x = x/dx
-    x = x - floor(x)
-    x = a + (b - a)*x
+    x = x .- floor.(x)
+    x = a .+ (b - a)*x
 end
 
 function phaseToImage!(img, pidx, cm)
-    for j in 1:size(pidx, 2), i in 1:size(pidx, 1)
-        img[i,j] = cm[pidx[i,j]]
+    n = size(pidx, 1)
+    for j in 1:size(pidx, 2), i in 1:n
+        img[n-i+1,j] = cm[pidx[i,j]]
     end
     nothing
 end
 
 function phaseToImage!(img, pidx, black, cm)
-    for j in 1:size(pidx, 2), i in 1:size(pidx, 1)
-        img[i,j] = cm[pidx[i,j]]*black[i,j]
+    n = size(pidx, 1)
+    for j in 1:size(pidx, 2), i in 1:n
+        img[n-i+1,j] = cm[pidx[i,j]]*black[i,j]
     end
     nothing
+end
+
+## Recipe for Plots
+
+@userplot PhasePlot
+
+@recipe function f(c::PhasePlot)
+    if length(c.args) < 3 || !(c.args[1] isa Function) 
+        error("Complex Plot requires a complex function")
+    end
+    
+    ff = c.args[1]
+    
+    xx = if c.args[2] isa AbstractVector
+	    	c.args[2]
+    	elseif c.args[2] isa NTuple{2,Int}
+    		linspace(c.args[2]..., 500)
+    	else
+    		error("Complex plot second argument must give the x limits")
+		end
+    yy = if c.args[3] isa AbstractVector
+	    	c.args[3]
+    	elseif c.args[3] isa NTuple{2,Int}
+    		linspace(c.args[3]..., 500)
+    	else
+    		error("Complex plot tihrtd argument must give the y limits")
+		end		
+  
+    
+
+    zz = xx' .+ im.*yy
+    
+    xlims := (first(xx),last(xx))
+    ylims := (first(yy),last(yy))
+    
+    @series portrait(Matrix{Complex128}(ff.(zz)))
 end
 
 end # module
