@@ -1,6 +1,7 @@
 module ComplexPhasePortrait
-using RecipesBase
+using RecipesBase, IntervalSets
 import Images
+import Colors
 import Colors: RGB, HSL
 
 export portrait,
@@ -71,7 +72,7 @@ end
 function baseArgs(fval::Array{Complex{Float64},2}; kwargs...)
     (farg, nphase, cm) = setupPhase(fval; kwargs...)
     (m, n) = size(nphase)
-    img = Array{RGB{Float64}}(m, n)
+    img = Array{RGB{Float64}}(undef, m, n)
     return img, nphase, cm, farg
 end
 
@@ -87,13 +88,13 @@ end
 "Color map for complex phase portrait with 600 elements."
 function baseColorMap(;ctype="standard")
     if ctype == "nist"
-        const nc = 900
-        cm = linspace(HSL(0.0, 1.0, 0.5), HSL(360.0, 1.0, 0.5), nc)
+        nc = 900
+        cm = range(HSL(0.0, 1.0, 0.5), stop=HSL(360.0, 1.0, 0.5), length=nc)
         idx = [1:Int(nc/6); Int(nc/6)+1:2:Int(nc/2); Int(nc/2)+1:2*Int(nc/3);
               2*Int(nc/3)+1:2:nc]
         cm = cm[idx]
     else
-        cm = linspace(HSL(0.0, 1.0, 0.5), HSL(360.0, 1.0, 0.5), 600)
+        cm = range(HSL(0.0, 1.0, 0.5), stop=HSL(360.0, 1.0, 0.5), length=600)
     end
     cm = convert(Array{RGB{Float64}}, cm)
 end
@@ -132,35 +133,35 @@ end
 @userplot PhasePlot
 
 @recipe function f(c::PhasePlot)
-    if length(c.args) < 3 || !(c.args[1] isa Function) 
-        error("Complex Plot requires a complex function")
+    if length(c.args) < 3 || !(c.args[1] isa Function)
+        error("Phase plot requires a complex function")
     end
-    
+
     ff = c.args[1]
-    
+
     xx = if c.args[2] isa AbstractVector
 	    	c.args[2]
-    	elseif c.args[2] isa NTuple{2,Int}
-    		linspace(c.args[2]..., 500)
+    	elseif c.args[2] isa AbstractInterval
+            a,b = endpoints(c.args[2])
+    		range(a; stop=b, length=500)
     	else
-    		error("Complex plot second argument must give the x limits")
+    		error("Phase plot second argument must give the x limits")
 		end
     yy = if c.args[3] isa AbstractVector
 	    	c.args[3]
-    	elseif c.args[3] isa NTuple{2,Int}
-    		linspace(c.args[3]..., 500)
+    	elseif c.args[3] isa AbstractInterval
+            a,b = endpoints(c.args[3])
+    		range(a; stop=b, length=500)
     	else
-    		error("Complex plot tihrtd argument must give the y limits")
-		end		
-  
-    
+    		error("Phase plot third argument must give the y limits")
+		end
 
     zz = xx' .+ im.*yy
-    
-    xlims := (first(xx),last(xx))
-    ylims := (first(yy),last(yy))
-    
-    @series portrait(Matrix{Complex128}(ff.(zz)))
+
+    # xlims := (first(xx),last(xx))
+    # ylims := (first(yy),last(yy))
+
+    @series portrait(Matrix{ComplexF64}(ff.(zz)))
 end
 
 end # module

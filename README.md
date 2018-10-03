@@ -16,11 +16,11 @@ There is so far one exported function, `portrait`, and here I will try to detail
 using ComplexPhasePortrait
 
 nx = 1000
-x = linspace(-1, 1, nx)
-Z = x' .+ flipdim(x, 1)*im
+x = range(-1, stop=1, length=nx)
+Z = x' .+ reverse(x)*im
 
-f(z) = (z - 0.5im).^2.*(z + 0.5+0.5im)./z
-fz = f(Z)
+f = z -> (z - 0.5im)^2 * (z + 0.5+0.5im)/z
+fz = f.(Z)
 ```
 
 Now a basic phase plot.
