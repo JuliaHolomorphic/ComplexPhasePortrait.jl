@@ -1,11 +1,14 @@
 module ComplexPhasePortrait
-using RecipesBase, IntervalSets
+using AbstractPlotting, Reactive, IntervalSets
 import Images
 import Colors
 import Colors: RGB, HSL
+import AbstractPlotting: plot!
 
 export portrait,
        PTproper, PTcgrid, PTstepphase, PTstepmod, phaseplot
+
+export (..)
 
 abstract type PortraitType <: Any end
 struct PTproper <: PortraitType end
@@ -130,38 +133,39 @@ end
 
 ## Recipe for Plots
 
-@userplot PhasePlot
-
-@recipe function f(c::PhasePlot)
-    if length(c.args) < 3 || !(c.args[1] isa Function)
-        error("Phase plot requires a complex function")
-    end
-
-    ff = c.args[1]
-
-    xx = if c.args[2] isa AbstractVector
-	    	c.args[2]
-    	elseif c.args[2] isa AbstractInterval
-            a,b = endpoints(c.args[2])
-    		range(a; stop=b, length=500)
-    	else
-    		error("Phase plot second argument must give the x limits")
-		end
-    yy = if c.args[3] isa AbstractVector
-	    	c.args[3]
-    	elseif c.args[3] isa AbstractInterval
-            a,b = endpoints(c.args[3])
-    		range(a; stop=b, length=500)
-    	else
-    		error("Phase plot third argument must give the y limits")
-		end
-
-    zz = xx' .+ im.*yy
-
-    # xlims := (first(xx),last(xx))
-    # ylims := (first(yy),last(yy))
-
-    @series portrait(Matrix{ComplexF64}(ff.(zz)))
+@recipe(PhasePlot) do scene
+    default_theme(scene)
 end
+
+function plot!(plot::PhasePlot{Tuple{X,Y,F}}) where {X<:AbstractVector,Y<:AbstractVector,F<:AbstractMatrix}
+    x, y, f = value.(plot[1:3])::Tuple{X,Y,F}
+    image!(plot, x, y, portrait(convert(AbstractMatrix{ComplexF64}, f));
+            limits = FRect(first(x),first(y),last(x)-first(x),last(y)-first(y)))
+end
+
+# avoid compile time issues
+function phaseplot(x::AbstractVector, y::AbstractVector, f::Function; kwds...)
+    z = x' .+ im.*y
+    phaseplot(x, y, f.(z); kwds...)
+end
+function phaseplot!(plot, x::AbstractVector, y::AbstractVector, f::Function; kwds...)
+    z = x' .+ im.*y
+    phaseplot!(plot, x, y, f.(z); kwds...)
+end
+
+
+
+function phaseplot(x::ClosedInterval, y::ClosedInterval, f::Function; kwds...)
+    a_x,b_x = endpoints(x)
+    a_y,b_y = endpoints(y)
+    phaseplot(range(a_x,stop=b_x,length=500), range(a_y,stop=b_y,length=500), f; kwds...)
+end
+function phaseplot!(plot, x::ClosedInterval, y::ClosedInterval, f::Function; kwds...)
+    a_x,b_x = endpoints(x)
+    a_y,b_y = endpoints(y)
+    phaseplot!(plot, range(a_x,stop=b_x,length=500), range(a_y,stop=b_y,length=500), f; kwds...)
+end
+
+
 
 end # module
