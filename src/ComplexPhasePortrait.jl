@@ -139,8 +139,7 @@ end
 
 function plot!(plot::PhasePlot{Tuple{X,Y,F}}) where {X<:AbstractVector,Y<:AbstractVector,F<:AbstractMatrix}
     x, y, f = value.(plot[1:3])::Tuple{X,Y,F}
-    image!(plot, x, y, portrait(convert(AbstractMatrix{ComplexF64}, f));
-            limits = FRect(first(x),first(y),last(x)-first(x),last(y)-first(y)))
+    image!(plot, x, y, portrait(convert(AbstractMatrix{ComplexF64}, f)))
 end
 
 # avoid compile time issues
@@ -158,7 +157,8 @@ end
 function phaseplot(x::ClosedInterval, y::ClosedInterval, f::Function; kwds...)
     a_x,b_x = endpoints(x)
     a_y,b_y = endpoints(y)
-    phaseplot(range(a_x,stop=b_x,length=500), range(a_y,stop=b_y,length=500), f; kwds...)
+    phaseplot(range(a_x,stop=b_x,length=500), range(a_y,stop=b_y,length=500), f;
+            limits = FRect(a_x,a_y,b_x-a_x,b_y-a_y), kwds...)
 end
 function phaseplot!(plot, x::ClosedInterval, y::ClosedInterval, f::Function; kwds...)
     a_x,b_x = endpoints(x)
