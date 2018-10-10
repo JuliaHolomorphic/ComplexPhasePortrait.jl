@@ -133,6 +133,12 @@ end
 
 ## Recipe for Plots
 
+portrait(x::AbstractVector, y::AbstractVector, f::Function) =
+    portrait(convert(AbstractMatrix{ComplexF64}, f.(x' .+ im .*y)))
+
+portrait(x::ClosedInterval, y::ClosedInterval, f::Function) =
+    portrait(_range(x), _range(y), f)
+
 @recipe(PhasePlot) do scene
     default_theme(scene)
 end
@@ -145,27 +151,27 @@ end
 # avoid compile time issues
 function phaseplot(x::AbstractVector, y::AbstractVector, f::Function; kwds...)
     z = x' .+ im.*y
-    phaseplot(x, y, f.(z); kwds...)
+    a_x,b_x = first(x),last(x)
+    a_y,b_y = first(y),last(y)
+    r = (b_y-a_y)/(b_x-a_x)
+    N = 400
+    s = Scene(resolution=(max(N,floor(Int,N/r)), max(N,floor(Int, r *N))))
+    phaseplot!(s, x, y, f.(z); limits = FRect(a_x,a_y,b_x-a_x,b_y-a_y), kwds...)
 end
-function phaseplot!(plot, x::AbstractVector, y::AbstractVector, f::Function; kwds...)
+function phaseplot!(plot::Union{AbstractScene,AbstractPlotting.ScenePlot}, x::AbstractVector, y::AbstractVector, f::Function; kwds...)
     z = x' .+ im.*y
     phaseplot!(plot, x, y, f.(z); kwds...)
 end
 
-
-
-function phaseplot(x::ClosedInterval, y::ClosedInterval, f::Function; kwds...)
-    a_x,b_x = endpoints(x)
-    a_y,b_y = endpoints(y)
-    phaseplot(range(a_x,stop=b_x,length=500), range(a_y,stop=b_y,length=500), f;
-            limits = FRect(a_x,a_y,b_x-a_x,b_y-a_y), kwds...)
-end
-function phaseplot!(plot, x::ClosedInterval, y::ClosedInterval, f::Function; kwds...)
-    a_x,b_x = endpoints(x)
-    a_y,b_y = endpoints(y)
-    phaseplot!(plot, range(a_x,stop=b_x,length=500), range(a_y,stop=b_y,length=500), f; kwds...)
+function _range(d::ClosedInterval)
+    a,b = endpoints(d)
+    range(a; stop=b, length=400)
 end
 
+phaseplot(x::ClosedInterval, y::ClosedInterval, f::Function; kwds...) =
+    phaseplot(_range(x), _range(y), f; kwds...)
 
+phaseplot!(plot::Union{AbstractScene,AbstractPlotting.ScenePlot}, x::ClosedInterval, y::ClosedInterval, f::Function; kwds...) =
+    phaseplot!(plot, _range(x), _range(y), r; kwds...)
 
 end # module
