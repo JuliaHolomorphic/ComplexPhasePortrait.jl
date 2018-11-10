@@ -53,7 +53,7 @@ function portrait(fval::Array{Complex{Float64},2}, ::Type{PTcgrid};
     (img, nphase, cm, farg) = baseArgs(fval; kwargs...)
     lowb = sqrt(0.75^2*(1.0 - brighten) + brighten)
     black = (sawfun(farg, 1/pres, lowb, 1.0)
-             .*sawfun(log(abs(fval)), 2pi/pres, lowb, 1.0))
+             .*sawfun.(log.(abs.(fval)), 2pi/pres, lowb, 1.0))
     phaseToImage!(img, nphase, black, cm)
     return img
 end
