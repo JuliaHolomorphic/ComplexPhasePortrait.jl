@@ -1,4 +1,4 @@
-# ComplexPhasePortrait
+# ComplexPhasePortrait.jl
 
 [![Build Status](https://travis-ci.org/JuliaHolomorphic/ComplexPhasePortrait.jl.svg?branch=master)](https://travis-ci.org/JuliaHolomorphic/ComplexPhasePortrait.jl)
 
