@@ -1,4 +1,6 @@
-# ComplexPhasePortrait
+# ComplexPhasePortrait.jl
+
+[![Build Status](https://travis-ci.org/JuliaHolomorphic/ComplexPhasePortrait.jl.svg?branch=master)](https://travis-ci.org/JuliaHolomorphic/ComplexPhasePortrait.jl)
 
 This package is a [Julia](http://julialang.org) implementation of the phase portrait ideas presented in Elias Wegert's book "[Visual Complex Functions](http://www.visual.wegert.com)".
 

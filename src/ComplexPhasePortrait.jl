@@ -1,10 +1,10 @@
 module ComplexPhasePortrait
-using AbstractPlotting, Reactive, IntervalSets
+using Reactive, IntervalSets, RecipesBase
+import AbstractPlotting
 import Images
 import Colors
 import Colors: RGB, HSL
-import AbstractPlotting: plot!
-
+import AbstractPlotting: plot!, Scene, AbstractScene, ScenePlot
 export portrait,
        PTproper, PTcgrid, PTstepphase, PTstepmod, phaseplot
 
@@ -53,7 +53,7 @@ function portrait(fval::Array{Complex{Float64},2}, ::Type{PTcgrid};
     (img, nphase, cm, farg) = baseArgs(fval; kwargs...)
     lowb = sqrt(0.75^2*(1.0 - brighten) + brighten)
     black = (sawfun(farg, 1/pres, lowb, 1.0)
-             .*sawfun(log.(abs.(fval)), 2pi/pres, lowb, 1.0))
+             .*sawfun.(log.(abs.(fval)), 2pi/pres, lowb, 1.0))
     phaseToImage!(img, nphase, black, cm)
     return img
 end
@@ -131,41 +131,66 @@ function phaseToImage!(img, pidx, black, cm)
     nothing
 end
 
+function _range(d::ClosedInterval)
+    a,b = endpoints(d)
+    range(a; stop=b, length=500)
+end
+
+_range(d::AbstractVector) = d
+
+portrait(x::AbstractVector, y::AbstractVector, f::Function) =
+    portrait(convert(AbstractMatrix{ComplexF64}, f.(x' .+ im .*y)))
+
+portrait(x::ClosedInterval, y::ClosedInterval, f::Function) =
+    portrait(_range(x), _range(y), f)
+
 ## Recipe for Plots
 
-@recipe(PhasePlot) do scene
+@userplot PhasePlot
+
+
+
+@recipe function f(c::PhasePlot)
+    xin, yin, ff = c.args
+    xx, yy = _range(xin),  _range(yin)
+    Z = ff.(xx' .+ im.*yy)
+    yflip := false
+    @series xx, yy, portrait(Matrix{ComplexF64}(Z[end:-1:1,:]))
+end
+
+## Recipe for Makie
+
+@AbstractPlotting.recipe(Phase) do scene
     default_theme(scene)
 end
 
-function plot!(plot::PhasePlot{Tuple{X,Y,F}}) where {X<:AbstractVector,Y<:AbstractVector,F<:AbstractMatrix}
+
+
+function plot!(plot::Phase{Tuple{X,Y,F}}) where {X<:AbstractVector,Y<:AbstractVector,F<:AbstractMatrix}
     x, y, f = value.(plot[1:3])::Tuple{X,Y,F}
     image!(plot, x, y, portrait(convert(AbstractMatrix{ComplexF64}, f)))
 end
 
 # avoid compile time issues
-function phaseplot(x::AbstractVector, y::AbstractVector, f::Function; kwds...)
+function phase(x::AbstractVector, y::AbstractVector, f::Function; kwds...)
     z = x' .+ im.*y
-    phaseplot(x, y, f.(z); kwds...)
+    a_x,b_x = first(x),last(x)
+    a_y,b_y = first(y),last(y)
+    r = (b_y-a_y)/(b_x-a_x)
+    N = 400
+    s = Scene(resolution=(max(N,floor(Int,N/r)), max(N,floor(Int, r *N))))
+    phase!(s, x, y, f.(z); limits = FRect(a_x,a_y,b_x-a_x,b_y-a_y), kwds...)
 end
-function phaseplot!(plot, x::AbstractVector, y::AbstractVector, f::Function; kwds...)
+function phase!(plot::Union{AbstractScene,ScenePlot}, x::AbstractVector, y::AbstractVector, f::Function; kwds...)
     z = x' .+ im.*y
-    phaseplot!(plot, x, y, f.(z); kwds...)
+    phase!(plot, x, y, f.(z); kwds...)
 end
 
 
+phase(x::ClosedInterval, y::ClosedInterval, f::Function; kwds...) =
+    phase(_range(x), _range(y), f; kwds...)
 
-function phaseplot(x::ClosedInterval, y::ClosedInterval, f::Function; kwds...)
-    a_x,b_x = endpoints(x)
-    a_y,b_y = endpoints(y)
-    phaseplot(range(a_x,stop=b_x,length=500), range(a_y,stop=b_y,length=500), f;
-            limits = FRect(a_x,a_y,b_x-a_x,b_y-a_y), kwds...)
-end
-function phaseplot!(plot, x::ClosedInterval, y::ClosedInterval, f::Function; kwds...)
-    a_x,b_x = endpoints(x)
-    a_y,b_y = endpoints(y)
-    phaseplot!(plot, range(a_x,stop=b_x,length=500), range(a_y,stop=b_y,length=500), f; kwds...)
-end
-
-
+phase!(plot::Union{AbstractScene,AbstractPlotting.ScenePlot}, x::ClosedInterval, y::ClosedInterval, f::Function; kwds...) =
+    phase!(plot, _range(x), _range(y), r; kwds...)
 
 end # module
