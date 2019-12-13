@@ -1,6 +1,6 @@
 name = "ComplexPhasePortrait"
 uuid = "38ac1a67-8e16-5889-9a62-b2c9995eb50f"
-version = "0.0.2"
+version = "0.1"
 
 [deps]
 AbstractPlotting = "537997a7-5e4e-5d89-9595-2241ea00577e"
