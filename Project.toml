@@ -1,6 +1,6 @@
 name = "ComplexPhasePortrait"
 uuid = "38ac1a67-8e16-5889-9a62-b2c9995eb50f"
-version = "0.1.1"
+version = "0.2"
 
 [deps]
 AbstractPlotting = "537997a7-5e4e-5d89-9595-2241ea00577e"
@@ -18,4 +18,4 @@ Images = "0.22"
 IntervalSets = "0.3.1, 0.4, 0.5"
 Reactive = "0.8.2"
 RecipesBase = "1"
-julia = "1"
+julia = "1.3"
