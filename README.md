@@ -6,10 +6,7 @@ This package is a [Julia](http://julialang.org) implementation of the phase port
 
 ## Installation
 
-From the Julia command prompt:
-```julia
-Pkg.clone("git://github.com/JuliaHolomorphic/ComplexPhasePortrait.jl.git")
-```
+This package is registered, so you can install it as any other Julia package: from the command line, type `]` to go into Pkg mode, and type `add ComplexPhasePortrait`.
 
 ## Examples
 
@@ -25,7 +22,7 @@ f = z -> (z - 0.5im)^2 * (z + 0.5+0.5im)/z
 fz = f.(Z)
 ```
 
-Now a basic phase plot.
+Now a basic phase plot. This will display itself on notebooks; to show the image at the REPL or on IDEs, install the `ImageView` package and do `imshow(img)`.
 ```julia
 img = portrait(fz)
 ```
