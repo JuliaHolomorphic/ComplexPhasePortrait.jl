@@ -14,7 +14,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 [compat]
 AbstractPlotting = "0.12"
 Colors = "0.12"
-Images = "0.22"
+Images = "0.22, 0.23"
 IntervalSets = "0.3.1, 0.4, 0.5"
 Reactive = "0.8.2"
 RecipesBase = "1"
