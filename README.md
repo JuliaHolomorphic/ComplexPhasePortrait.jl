@@ -59,7 +59,8 @@ img = portrait(fz, PTcgrid)
 ## Plot recipes
 
 ComplexPhasePortrait.jl has support for plotting recipes for
-[Plots.jl](https://github.com/JuliaPlots/Plots.jl).
+[Plots.jl](https://github.com/JuliaPlots/Plots.jl) and
+[Makie.jl](https://github.com/MakieOrg/Makie.jl).
 
 ### Plots.jl:
 ```julia
