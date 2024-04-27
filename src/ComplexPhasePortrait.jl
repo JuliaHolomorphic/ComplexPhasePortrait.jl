@@ -152,10 +152,20 @@ portrait(x::ClosedInterval, y::ClosedInterval, f::Function) =
 
 @recipe function f(c::PhasePlot)
     xin, yin, ff = c.args
+
+    na = length(c.args)
+    args,kwargs = if na > 3
+        rest = c.args[4:na]
+        ikw = findall(a -> a isa Pair{Symbol,<:Any}, rest)
+        rest[filter(∉(ikw), (4:na) .- 3)], rest[ikw]
+    else
+        (), (;)
+    end
+
     xx, yy = _range(xin),  _range(yin)
     Z = ff.(xx' .+ im.*yy)
     yflip := false
-    @series xx, yy, portrait(Matrix{ComplexF64}(Z[end:-1:1,:]))
+    @series xx, yy, portrait(Matrix{ComplexF64}(Z[end:-1:1,:]), args...; kwargs...)
 end
 
 ## Recipe for Makie

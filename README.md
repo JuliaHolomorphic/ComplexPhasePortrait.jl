@@ -55,3 +55,22 @@ Finally, a conformal grid is given by
 img = portrait(fz, PTcgrid)
 ```
 ![conformal grid](doc/figures/cgrid.png)
+
+## Plot recipes
+
+ComplexPhasePortrait.jl has support for plotting recipes for
+[Plots.jl](https://github.com/JuliaPlots/Plots.jl).
+
+Example for Plots.jl:
+```julia
+using Plots
+using LaTeXStrings
+
+using ComplexPhasePortrait
+using IntervalSets
+
+f = z -> (z - 0.5im)^2 * (z + 0.5+0.5im)/z
+
+phaseplot(-1..1, -1..1, f, PTcgrid, :ctype=>"nist";
+          xlabel=L"\Re\{z\}", ylabel=L"\Im\{z\}")
+```
