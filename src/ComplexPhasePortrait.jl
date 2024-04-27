@@ -1,10 +1,10 @@
 module ComplexPhasePortrait
 using Reactive, IntervalSets, RecipesBase
-import AbstractPlotting
+import Makie
 import Images
 import Colors
 import Colors: RGB, HSL
-import AbstractPlotting: plot!, Scene, AbstractScene, ScenePlot
+import Makie: plot!, Scene, AbstractScene, ScenePlot
 export portrait,
        PTproper, PTcgrid, PTstepphase, PTstepmod, phaseplot
 
@@ -160,7 +160,7 @@ end
 
 ## Recipe for Makie
 
-@AbstractPlotting.recipe(Phase) do scene
+@Makie.recipe(Phase) do scene
     default_theme(scene)
 end
 
@@ -190,7 +190,7 @@ end
 phase(x::ClosedInterval, y::ClosedInterval, f::Function; kwds...) =
     phase(_range(x), _range(y), f; kwds...)
 
-phase!(plot::Union{AbstractScene,AbstractPlotting.ScenePlot}, x::ClosedInterval, y::ClosedInterval, f::Function; kwds...) =
+phase!(plot::Union{AbstractScene,Makie.ScenePlot}, x::ClosedInterval, y::ClosedInterval, f::Function; kwds...) =
     phase!(plot, _range(x), _range(y), r; kwds...)
 
 end # module
