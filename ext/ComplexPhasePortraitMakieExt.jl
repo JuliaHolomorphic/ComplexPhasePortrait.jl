@@ -2,7 +2,7 @@ module ComplexPhasePortraitMakieExt
 using IntervalSets
 
 import Makie
-import Makie: plot!, image!, FRect
+import Makie: plot!, image!, Rectf
 
 using ComplexPhasePortrait
 import ComplexPhasePortrait: phase, phase!, _range
@@ -22,7 +22,7 @@ function plot!(plot::Phase{Tuple{X,Y,F}}) where {X<:AbstractVector,Y<:AbstractVe
     a_x,b_x = first(x[]),last(x[])
     a_y,b_y = first(y[]),last(y[])
 
-    image!(plot, a_x .. b_x, a_y .. b_y, c, limits = FRect(a_x,a_y,b_x-a_x,b_y-a_y))
+    image!(plot, a_x .. b_x, a_y .. b_y, c, limits = Rectf(a_x,a_y,b_x-a_x,b_y-a_y))
 end
 
 function plot!(plot::Phase{Tuple{X,Y,F}}) where {X<:Any,Y<:Any,F<:Function}
