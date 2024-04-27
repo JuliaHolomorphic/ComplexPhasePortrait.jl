@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/JuliaHolomorphic/ComplexPhasePortrait.jl/workflows/CI/badge.svg)](https://github.com/JuliaHolomorphic/ComplexPhasePortrait.jl/actions)
 [![Coverage](https://codecov.io/gh/JuliaHolomorphic/ComplexPhasePortrait.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaHolomorphic/ComplexPhasePortrait.jl)
 
-This package is a [Julia](http://julialang.org) implementation of the phase portrait ideas presented in Elias Wegert's book "[Visual Complex Functions](http://www.visual.wegert.com)".
+This package is a [Julia](http://julialang.org) implementation of the phase portrait ideas presented in Elias Wegert's book "[Visual Complex Functions](https://doi.org/10.1007/978-3-0348-0180-5)".
 
 ## Installation
 
