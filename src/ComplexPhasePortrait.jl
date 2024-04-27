@@ -1,12 +1,11 @@
 module ComplexPhasePortrait
 using Reactive, IntervalSets, RecipesBase
-import Makie
 import Images
 import Colors
 import Colors: RGB, HSL
-import Makie: plot!, Scene, AbstractScene, ScenePlot
 export portrait,
-       PTproper, PTcgrid, PTstepphase, PTstepmod, phaseplot
+    PTproper, PTcgrid, PTstepphase, PTstepmod, phaseplot,
+    phase, phase!
 
 export (..)
 
@@ -73,6 +72,8 @@ function portrait(fval::Array{Complex{Float64},2}, ::Type{PTstepphase};
 end
 
 function baseArgs(fval::Array{Complex{Float64},2}; kwargs...)
+    fval = copy(fval)
+    fval[isnan.(fval)] .= 0
     (farg, nphase, cm) = setupPhase(fval; kwargs...)
     (m, n) = size(nphase)
     img = Array{RGB{Float64}}(undef, m, n)
@@ -148,8 +149,6 @@ portrait(x::ClosedInterval, y::ClosedInterval, f::Function) =
 
 @userplot PhasePlot
 
-
-
 @recipe function f(c::PhasePlot)
     xin, yin, ff = c.args
 
@@ -170,37 +169,8 @@ end
 
 ## Recipe for Makie
 
-@Makie.recipe(Phase) do scene
-    default_theme(scene)
-end
-
-
-
-function plot!(plot::Phase{Tuple{X,Y,F}}) where {X<:AbstractVector,Y<:AbstractVector,F<:AbstractMatrix}
-    x, y, f = value.(plot[1:3])::Tuple{X,Y,F}
-    image!(plot, x, y, portrait(convert(AbstractMatrix{ComplexF64}, f)))
-end
-
-# avoid compile time issues
-function phase(x::AbstractVector, y::AbstractVector, f::Function; kwds...)
-    z = x' .+ im.*y
-    a_x,b_x = first(x),last(x)
-    a_y,b_y = first(y),last(y)
-    r = (b_y-a_y)/(b_x-a_x)
-    N = 400
-    s = Scene(resolution=(max(N,floor(Int,N/r)), max(N,floor(Int, r *N))))
-    phase!(s, x, y, f.(z); limits = FRect(a_x,a_y,b_x-a_x,b_y-a_y), kwds...)
-end
-function phase!(plot::Union{AbstractScene,ScenePlot}, x::AbstractVector, y::AbstractVector, f::Function; kwds...)
-    z = x' .+ im.*y
-    phase!(plot, x, y, f.(z); kwds...)
-end
-
-
-phase(x::ClosedInterval, y::ClosedInterval, f::Function; kwds...) =
-    phase(_range(x), _range(y), f; kwds...)
-
-phase!(plot::Union{AbstractScene,Makie.ScenePlot}, x::ClosedInterval, y::ClosedInterval, f::Function; kwds...) =
-    phase!(plot, _range(x), _range(y), r; kwds...)
+# Actual functionality in extension module ComplexPhasePortraitMakieExt
+function phase end
+function phase! end
 
 end # module
