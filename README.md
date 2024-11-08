@@ -3,13 +3,13 @@
 [![Build Status](https://github.com/JuliaHolomorphic/ComplexPhasePortrait.jl/workflows/CI/badge.svg)](https://github.com/JuliaHolomorphic/ComplexPhasePortrait.jl/actions)
 [![Coverage](https://codecov.io/gh/JuliaHolomorphic/ComplexPhasePortrait.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaHolomorphic/ComplexPhasePortrait.jl)
 
-This package is a [Julia](http://julialang.org) implementation of the phase portrait ideas presented in Elias Wegert's book "[Visual Complex Functions](http://www.visual.wegert.com)".
+This package is a [Julia](http://julialang.org) implementation of the phase portrait ideas presented in Elias Wegert's book "[Visual Complex Functions](https://doi.org/10.1007/978-3-0348-0180-5)".
 
 ## Installation
 
 From the Julia command prompt:
 ```julia
-Pkg.clone("git://github.com/JuliaHolomorphic/ComplexPhasePortrait.jl.git")
+] add ComplexPhasePortrait
 ```
 
 ## Examples
@@ -55,3 +55,55 @@ Finally, a conformal grid is given by
 img = portrait(fz, PTcgrid)
 ```
 ![conformal grid](doc/figures/cgrid.png)
+
+## Plot recipes
+
+ComplexPhasePortrait.jl has support for plotting recipes for
+[Plots.jl](https://github.com/JuliaPlots/Plots.jl) and
+[Makie.jl](https://github.com/MakieOrg/Makie.jl).
+
+### Plots.jl:
+```julia
+using Plots
+using LaTeXStrings
+
+using ComplexPhasePortrait
+using IntervalSets
+
+f = z -> (z - 0.5im)^2 * (z + 0.5+0.5im)/z
+
+phaseplot(-1..1, -1..1, f, PTcgrid, :ctype=>"nist";
+          xlabel=L"\Re\{z\}", ylabel=L"\Im\{z\}")
+```
+![Plots.jl example](doc/figures/plots.jl.png)
+
+### Makie.jl
+
+Makie.jl is an optional dependency via package extensions, and the
+functionality to plot phase portraits becomes available if Makie.jl or
+one of its front-end packages is loaded before
+ComplexPhasePortrait.jl:
+
+```julia
+using GLMakie
+
+using ComplexPhasePortrait
+using IntervalSets
+
+f = z -> (z - 0.5im)^2 * (z + 0.5+0.5im)/z
+
+fig = Figure()
+ax = Axis(fig[1, 1], aspect=1)
+phase!(ax, -1..1, -1..1, f, portrait_type=PTcgrid, ctyle="nist")
+display(fig)
+```
+![Makie.jl example](doc/figures/makie.jl.png)
+
+Alternatively, one can use the function `phase`:
+```julia
+phase(x, y, f; kwargs...)
+```
+
+`x` and `y` can be vectors or `ClosedInterval`s; in the former case
+`f` can be a matrix of appropriate size or a `Function`, in the latter
+case, only a `Function` is possible.
