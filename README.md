@@ -56,6 +56,24 @@ img = portrait(fz, PTcgrid)
 ```
 ![conformal grid](doc/figures/cgrid.png)
 
+You can also use custom colormaps to create unique visualizations. Below are examples using the `viridis` colormap and a custom colormap.
+
+```julia
+using ComplexPhasePortrait, ColorSchemes
+
+viridis_colormap = [RGB(c.r, c.g, c.b) for c in ColorSchemes.viridis.colors]
+
+img = portrait(fz, PTcgrid, colormap=viridis_colormap)
+```
+![viridis colormap](doc/figures/viridis.png)
+
+```julia
+using ComplexPhasePortrait, Colors
+custom_colormap = [RGB(1.0, 0.0, 0.0), RGB(0.0, 1.0, 0.0), RGB(0.0, 0.0, 1.0)]
+img = portrait(fz, PTcgrid, colormap=custom_colormap)
+```
+![custom colormap](doc/figures/custom_colormap.png)
+
 ## Plot recipes
 
 ComplexPhasePortrait.jl has support for plotting recipes for
@@ -107,3 +125,15 @@ phase(x, y, f; kwargs...)
 `x` and `y` can be vectors or `ClosedInterval`s; in the former case
 `f` can be a matrix of appropriate size or a `Function`, in the latter
 case, only a `Function` is possible.
+
+## Saving Images
+
+To save the generated phase portraits as image file directly without use of Plots.jl or Makie.jl, you can use the `save` function from the [Images.jl](https://github.com/JuliaImages/Images.jl) package. For example:
+
+```julia
+using Images
+f = z -> (z - 0.5im)^2 * (z + 0.5+0.5im)/z
+fz = f.(Z)
+img = portrait(fz)
+save("phase_portrait.png", img)
+```

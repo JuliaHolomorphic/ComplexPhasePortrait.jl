@@ -36,8 +36,8 @@ Named arguments:
   `pres=20`.
 """
 
-function portrait(fval::Array{Complex{Float64},2}; kwargs...)
-    portrait(fval, PTproper; kwargs...)
+function portrait(fval::Array{Complex{Float64},2}; colormap=nothing, kwargs...)
+    portrait(fval, PTproper; colormap=colormap, kwargs...)
 end
 
 function portrait(fval::Array{Complex{Float64},2}, ::Type{PTproper};
@@ -80,8 +80,8 @@ function baseArgs(fval::Array{Complex{Float64},2}; kwargs...)
     return img, nphase, cm, farg
 end
 
-function setupPhase(fval; kwargs...)
-    cm = baseColorMap(;kwargs...)
+function setupPhase(fval; colormap=nothing, kwargs...)
+    cm = baseColorMap(;colormap=colormap, kwargs...)
     nc = length(cm)
     farg = (angle.(-fval) .+ pi)./2pi
     nphase = stepfun(farg, nc)
@@ -90,7 +90,11 @@ function setupPhase(fval; kwargs...)
 end
 
 "Color map for complex phase portrait with 600 elements."
-function baseColorMap(;ctype="standard")
+function baseColorMap(;ctype="standard", colormap=nothing)
+    if !isnothing(colormap)
+        return convert(Array{RGB{Float64}}, colormap)
+    end
+
     if ctype == "nist"
         nc = 900
         cm = range(HSL(0.0, 1.0, 0.5), stop=HSL(360.0, 1.0, 0.5), length=nc)
