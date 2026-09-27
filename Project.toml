@@ -1,6 +1,6 @@
 name = "ComplexPhasePortrait"
 uuid = "38ac1a67-8e16-5889-9a62-b2c9995eb50f"
-version = "0.2.3"
+version = "0.2.4"
 
 [deps]
 ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
@@ -17,16 +17,17 @@ Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 ComplexPhasePortraitMakieExt = "Makie"
 
 [compat]
-CairoMakie = "0.11"
-ColorSchemes = "3.31.0"
-Colors = "0.12"
-Images = "0.22,0.23,0.26"
-IntervalSets = "0.3.1, 0.4, 0.5, 0.7"
-Makie = "0.20"
-Plots = "1.40"
-Reactive = "0.8.2"
-RecipesBase = "1"
-julia = "1.9"
+CairoMakie = "0.15"
+ColorSchemes = "3.31"
+Colors = "0.12.11, 0.13"
+Images = "0.26"
+IntervalSets = "0.7"
+Makie = "0.24"
+Plots = "1.41"
+Reactive = "0.8.3"
+RecipesBase = "1.3"
+Test = "1"
+julia = "1.10"
 
 [extras]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
