@@ -1,4 +1,5 @@
-using ComplexPhasePortrait, Colors, ColorSchemes, Images
+using ComplexPhasePortrait, Colors, ColorSchemes
+import Images
 using Test
 
 using Plots
